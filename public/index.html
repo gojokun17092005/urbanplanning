@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Urban Planning Decision Support System</title>
-  <meta name="description" content="Understand your city and plan what comes next." />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="description" content="A rule-based decision support system for urban planners and municipal authorities. Evaluate city conditions, check planning benchmarks, and get actionable recommendations." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
   <!-- Chart.js for Radar Chart -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -23,183 +23,172 @@
     </div>
 
     <div class="header-actions">
-      <label for="presetSelect">Viewing:</label>
+      <label for="presetSelect">Scenario:</label>
       <select id="presetSelect">
         <option value="metro_cbd">Metropolitan CBD</option>
         <option value="residential">Rapid Urbanizing Residential Sector</option>
         <option value="eco_garden">Sustainable Eco-Garden City</option>
-        <option value="industrial">Industrial & Manufacturing Hub</option>
+        <option value="industrial">Industrial &amp; Manufacturing Hub</option>
         <option value="tod_corridor">Transit-Oriented IT Corridor</option>
         <option value="mixed_15min">15-Minute Mixed-Use Quarter</option>
       </select>
       <button id="btnReset" class="btn btn-secondary">Reset</button>
-      <button id="btnSimulate" class="btn btn-primary">Update Simulation</button>
+      <button id="btnAssess" class="btn btn-primary">Run Assessment</button>
     </div>
   </header>
 
   <main class="container">
 
-    <!-- Thoughtful Welcome Section -->
+    <!-- Welcome / Scenario Header -->
     <section class="welcome-section">
-      <h2 style="font-weight: 700; font-size: 2.2rem; letter-spacing: -0.03em;">Hello! Let's take a look at your city.</h2>
-      <p style="font-size: 1.1rem;">I've gathered the latest data so we can explore current conditions, find where we're falling short, and decide what to do next to improve residents' lives.</p>
-      <div class="scenario-desc-panel" style="margin-top: 2rem; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: none;">
-        <p style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary-accent); margin-bottom: 0.5rem; font-weight: 600;">Currently exploring</p>
-        <strong id="scenarioTitle" style="font-size: 1.25rem; color: var(--text-main);">Industrial & Manufacturing Hub</strong>
-        <p id="scenarioDesc" style="margin-top: 0.5rem; color: var(--text-muted); line-height: 1.6;">This scenario explores the challenges of an industrial district, including air quality, essential utilities, freight movement, and flood preparedness.</p>
+      <h2>Hello! Let's take a look at your city.</h2>
+      <p>Adjust the urban parameters below, then click <strong>Run Assessment</strong> to evaluate conditions, check planning benchmarks, and get recommendations.</p>
+      <div class="scenario-desc-panel">
+        <p class="scenario-label">Currently exploring</p>
+        <strong id="scenarioTitle">Metropolitan CBD</strong>
+        <p id="scenarioDesc" style="margin-top: 0.5rem;">Explore congestion, pollution, and pressure on central infrastructure.</p>
       </div>
     </section>
 
-    <!-- Your city's current picture (Summary narrative) -->
-    <section class="card" style="border: none; background: #f3f4f6;">
+    <!-- Parameter Input Form -->
+    <section class="card" id="paramSection">
       <div class="card-header">
-        <h3 style="font-size: 1.3rem;">How are we doing overall?</h3>
+        <h3>Urban Parameter Input</h3>
+        <p>Enter values for each planning parameter. Fields are grouped by category. All inputs accept numeric values within the stated range.</p>
       </div>
-      <p id="conversationalSummary" style="font-size: 1.1rem; line-height: 1.7; color: var(--text-main);">
-        <!-- Populated by JS -->
-        I've analyzed the data, and currently, the city's overall situation is <strong>stable</strong>. Our urban stress level is sitting at a manageable <strong id="stressValText">28 out of 100</strong>. When looking at our infrastructure as a whole, it's scoring <strong id="compositeValText">79 out of 100</strong>. However, there are still <strong id="gapsValueText">2</strong> essential service targets that we aren't quite meeting yet.
-      </p>
+
+      <!-- Category filter pills -->
+      <div class="pills-nav" id="pillsContainer" role="group" aria-label="Category filter">
+        <button class="pill active" data-cat="All">All Parameters</button>
+        <button class="pill" data-cat="Demographic">People &amp; Population</button>
+        <button class="pill" data-cat="Land Use">Land &amp; Zoning</button>
+        <button class="pill" data-cat="Transport">Roads &amp; Transit</button>
+        <button class="pill" data-cat="Infrastructure">Basic Utilities</button>
+        <button class="pill" data-cat="Environment">Nature &amp; Air</button>
+        <button class="pill" data-cat="Disaster">Safety &amp; Risks</button>
+        <button class="pill" data-cat="Public Service">Schools &amp; Hospitals</button>
+        <button class="pill" data-cat="Economic">Money &amp; Costs</button>
+      </div>
+
+      <!-- Number inputs grid (populated by JS) -->
+      <div class="params-grid" id="paramsGrid" role="form" aria-label="Urban parameter inputs">
+        <!-- Populated dynamically in script.js -->
+      </div>
+
+      <!-- Global validation summary (shown only when there are errors) -->
+      <div id="validationSummary" class="validation-summary" hidden></div>
+
+      <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+        <button id="btnAssess2" class="btn btn-primary">Run Assessment</button>
+        <button id="btnReset2" class="btn btn-secondary">Reset to Defaults</button>
+      </div>
     </section>
 
-    <!-- What deserves attention today? -->
-    <section class="card">
-      <div class="card-header">
-        <h3 style="font-size: 1.3rem;">Here's what I noticed about the city today.</h3>
-        <p>I've highlighted a few key areas that are currently impacting residents the most.</p>
-      </div>
-      <div id="insightsContainer" style="display: flex; flex-direction: column; gap: 1rem;">
-        <!-- Dynamically populated by JS -->
-      </div>
-    </section>
+    <!-- Results area — hidden until first assessment -->
+    <div id="resultsArea" hidden>
 
-    <!-- Machine Learning Urban Risk Prediction Section -->
-    <section id="mlCard" class="card">
-      <div class="card-header">
-        <h3 style="font-size: 1.3rem;">Our AI's thoughts on future risk</h3>
-        <p>I asked our Random Forest AI model to look at these patterns. <span id="mlModelStatus" style="font-weight: 500; color: var(--accent-amber);">Loading...</span></p>
-      </div>
-      <div id="mlContent" style="display: flex; flex-wrap: wrap; gap: 20px;">
-        <div style="flex: 1; min-width: 250px; background: var(--bg-color); padding: 25px; border-radius: 12px; border: 1px solid var(--border-color);">
-          <h4 style="font-size: 0.95rem; font-weight: 500; color: var(--text-muted);">The AI classifies this scenario's risk as:</h4>
-          <div id="mlPredictedRisk" style="font-size: 2.5rem; font-weight: 800; margin-top: 5px; color: var(--primary-accent); letter-spacing: -0.02em;">--</div>
-          <div style="margin-top: 10px; font-size: 0.9rem; color: var(--text-muted);" id="mlDisclaimer">Waiting for ML service...</div>
+      <!-- Overall Summary -->
+      <section class="card" style="background: #f3f4f6; border: none;">
+        <div class="card-header">
+          <h3>How are we doing overall?</h3>
         </div>
-        <div style="flex: 1; min-width: 250px;">
-          <h4 style="font-size: 0.95rem; font-weight: 500; color: var(--text-muted); margin-bottom: 1rem;">Here's how certain it is across the different risk levels:</h4>
-          <div id="mlProbabilitiesGrid" style="display: grid; gap: 14px;">
-            <!-- Rendered by JS -->
+        <p id="conversationalSummary" style="font-size: 1.05rem; line-height: 1.7; color: var(--text-main);">
+          <!-- Populated by JS -->
+        </p>
+        <!-- Key metric chips -->
+        <div class="metrics-strip" id="metricsStrip"></div>
+      </section>
+
+      <!-- Key Insights -->
+      <section class="card">
+        <div class="card-header">
+          <h3>Here's what I noticed about the city today.</h3>
+          <p>Key areas currently impacting residents, based on the parameter values you entered.</p>
+        </div>
+        <div id="insightsContainer" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+      </section>
+
+      <!-- Two-column: Radar chart + Benchmark table -->
+      <div class="two-columns">
+
+        <!-- Domain Radar Chart -->
+        <section class="card">
+          <div class="card-header">
+            <h3>How are the different parts of the city doing?</h3>
+            <p>Performance scores (out of 100) across eight planning domains.</p>
+          </div>
+          <div id="chartStory" class="chart-story"></div>
+          <div class="chart-container">
+            <canvas id="radarChart"></canvas>
+          </div>
+          <div class="domain-scores-grid" id="domainScoresGrid"></div>
+        </section>
+
+        <!-- Benchmark compliance table -->
+        <section class="card">
+          <div class="card-header">
+            <h3>Are we meeting our planning benchmarks?</h3>
+            <p>Checked against published guidelines (MoHUA, URDPFI, CPCB, WHO, NDMA). These are planning reference thresholds — not formal legal compliance determinations.</p>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>What we're measuring</th>
+                  <th>Target</th>
+                  <th>Current value</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="benchmarksTbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+
+
+      <!-- What-if comparison -->
+      <section class="card" id="whatifSection">
+        <div class="card-header">
+          <h3>What-if Scenario Comparison</h3>
+          <p>Compare your current assessment against another saved scenario. Select a scenario below and click <strong>Compare</strong>.</p>
+        </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin-bottom: 1.5rem;">
+          <label for="compareSelect" style="font-weight: 500;">Compare with:</label>
+          <select id="compareSelect">
+            <option value="metro_cbd">Metropolitan CBD</option>
+            <option value="residential">Rapid Urbanizing Residential</option>
+            <option value="eco_garden">Sustainable Eco-Garden City</option>
+            <option value="industrial">Industrial &amp; Manufacturing Hub</option>
+            <option value="tod_corridor">Transit-Oriented IT Corridor</option>
+            <option value="mixed_15min">15-Minute Mixed-Use Quarter</option>
+          </select>
+          <button id="btnCompare" class="btn btn-secondary">Compare</button>
+        </div>
+        <div id="comparisonTable" hidden>
+          <div class="table-wrapper">
+            <table id="compareTableEl">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th id="compareColA">Current</th>
+                  <th id="compareColB">Comparison</th>
+                </tr>
+              </thead>
+              <tbody id="compareTableBody"></tbody>
+            </table>
           </div>
         </div>
-      </div>
-      <details class="expandable">
-        <summary>I'd like to know more about how this prediction is made.</summary>
-        <p>Of course! This prediction comes from a Random Forest Machine Learning model. It essentially looks at hundreds of examples of past city conditions and learns to recognize patterns. The percentages above show how strongly your current city data resembles the historical patterns for each risk level.</p>
-        <p><strong>Just a quick heads-up:</strong> Right now, I'm using a model trained on synthetic practice data. It's great for exploring how AI can help us find hidden patterns, but you shouldn't use these specific predictions to make real-world legal or financial decisions just yet!</p>
-      </details>
-    </section>
-
-    <!-- Parameter Modeler Section -->
-    <section class="card">
-      <div class="card-header">
-        <h3 style="font-size: 1.3rem;">Let's try out some changes.</h3>
-        <p>Curious what would happen if the population grew, or if we built more roads? Tweak the numbers below, and click "Update Simulation" when you're ready to see how it impacts the city.</p>
-      </div>
-
-      <!-- Filter Buttons for All 8 Categories -->
-      <div class="pills-nav" id="pillsContainer">
-        <button class="pill active" data-cat="All">Everything</button>
-        <button class="pill" data-cat="Demographic">People & Population</button>
-        <button class="pill" data-cat="Land Use">Land & Zoning</button>
-        <button class="pill" data-cat="Transport">Roads & Transit</button>
-        <button class="pill" data-cat="Infrastructure">Basic Utilities</button>
-        <button class="pill" data-cat="Environment">Nature & Air</button>
-        <button class="pill" data-cat="Disaster">Safety & Risks</button>
-        <button class="pill" data-cat="Public Service">Schools & Hospitals</button>
-        <button class="pill" data-cat="Economic">Money & Costs</button>
-      </div>
-
-      <!-- Sliders Grid -->
-      <div class="sliders-grid" id="slidersGrid">
-        <!-- Generated dynamically in script.js -->
-      </div>
-    </section>
-
-    <!-- Two-Column Layout 1: Radar Chart & Domain Scores -->
-    <div class="two-columns">
-      
-      <!-- Domain Radar Chart & Score Cards -->
-      <section class="card">
-        <div class="card-header">
-          <h3 style="font-size: 1.2rem;">How are the different parts of the city doing?</h3>
-          <p>This breaks down our performance (out of 100) across eight major areas.</p>
-        </div>
-        <div class="chart-story" id="chartStory" style="font-size: 1rem; line-height: 1.6; background: #fff; border: 1px solid var(--border-highlight); color: var(--primary-accent);">
-          <!-- Dynamically populated -->
-        </div>
-        <div class="chart-container">
-          <canvas id="radarChart"></canvas>
-        </div>
-        <div class="domain-scores-grid" id="domainScoresGrid">
-          <!-- Dynamically populated -->
-        </div>
       </section>
 
-      <!-- Statutory Standards Compliance -->
-      <section class="card">
-        <div class="card-header">
-          <h3 style="font-size: 1.2rem;">Are we meeting our goals?</h3>
-          <p>I've checked our current numbers against the official planning guidelines (like MoHUA, WHO, and CPCB) to see where we stand.</p>
-        </div>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>What we're measuring</th>
-                <th>Our Goal</th>
-                <th>Where we are</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="benchmarksTbody">
-              <!-- Dynamically populated -->
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-    </div>
-
-    <!-- Two-Column Layout 2: Zoning Map & Capital Projects -->
-    <div class="two-columns">
-      
-      <!-- Spatial Zoning Blueprint Visualizer Canvas -->
-      <section class="card">
-        <div class="card-header">
-          <h3 style="font-size: 1.2rem;">A rough sketch of the city layout.</h3>
-          <p>Based on your land-use settings, here's approximately how the space is divided up.</p>
-        </div>
-        <div class="canvas-wrapper">
-          <canvas id="zoningCanvas" width="560" height="240"></canvas>
-        </div>
-      </section>
-
-      <!-- Recommended Capital Projects -->
-      <section class="card">
-        <div class="card-header">
-          <h3 style="font-size: 1.2rem;">My recommendations for next steps.</h3>
-          <p>Based on the gaps we found, here are the capital projects I'd suggest prioritizing.</p>
-        </div>
-        <div class="projects-list" id="projectsList">
-          <!-- Dynamically populated -->
-        </div>
-      </section>
-
-    </div>
+    </div><!-- /#resultsArea -->
 
   </main>
 
   <footer>
-    <p>Smart Urban Planning Decision Support System</p>
+    <p>Smart Urban Planning Decision Support System &mdash; Rule-based assessment engine. Results are indicative and should be validated by qualified planners before statutory decisions are made.</p>
   </footer>
 
   <script src="script.js"></script>
